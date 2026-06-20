@@ -1,0 +1,70 @@
+// ─────────────────────────────────────────────────────────────
+// The Mindful Aspirant — Prisma Schema
+// Database: Vercel Postgres (PostgreSQL)
+// ─────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────
+// User — synced from Clerk on first sign-in
+// ─────────────────────────────────────────────────────────────
+model User {
+  id         String   @id @default(uuid())
+  clerkId    String   @unique
+  targetExam String   @default("")
+  targetDate DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  moodLogs MoodLog[]
+  journals JournalEntry[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────────────────────
+// MoodLog — daily emotional check-in (1–5 scale)
+// ─────────────────────────────────────────────────────────────
+model MoodLog {
+  id        String   @id @default(uuid())
+  userId    String
+  score     Int      // 1 = very low, 5 = excellent
+  tags      String[] // e.g. ["anxious", "sleep-deprived", "motivated"]
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@map("mood_logs")
+}
+
+// ─────────────────────────────────────────────────────────────
+// JournalEntry — free-form reflections with AI analysis
+// ─────────────────────────────────────────────────────────────
+model JournalEntry {
+  id             String   @id @default(uuid())
+  userId         String
+  text           String   // raw journal text
+  primaryEmotion String   @default("neutral")
+  stressors      String[] // e.g. ["mock exam failure", "sleep loss"]
+  advice         String   @default("") // AI-generated cognitive reframing advice
+  isCrisis       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@map("journal_entries")
+}
