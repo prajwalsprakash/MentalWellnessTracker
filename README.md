@@ -2,9 +2,16 @@
 
 > *Your digital strategist for mental clarity and exam mastery.*
 
+**The Mindful Aspirant** is a hyper-personalized, calming mental wellness tracker designed specifically for students tackling high-stakes competitive examinations. Built on Next.js 16, powered by Google Gemini 3.5 Flash, styled with a soothing glassmorphic UI, and secured with Clerk and database crisis safety interceptors.
+
 🔗 **Live Demo:** [https://mindful-aspirant.vercel.app](https://mindful-aspirant.vercel.app)
 
-**The Mindful Aspirant** is a hyper-personalized, calming mental wellness tracker designed specifically for students tackling high-stakes competitive examinations. Built on Next.js 16, powered by Google Gemini 3.5 Flash, styled with a soothing glassmorphic UI, and secured with Clerk and database crisis safety interceptors.
+Note: It's Good to create new sign-up to properly onboard of Exam aspirantand give the details of the preferences.
+Or use below test account:
+
+Test account: learning.nci@gmail.com
+pwd: mAr5zp6h2GHtj4F
+
 
 ---
 
