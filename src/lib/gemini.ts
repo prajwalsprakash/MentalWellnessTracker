@@ -45,11 +45,17 @@ export const geminiSafetySettings: GoogleLanguageModelOptions = {
  * Includes the liability guardrail and exam-specific context.
  * No PII is included — only the exam name.
  */
-export function buildCompanionSystemPrompt(targetExam?: string): string {
+export function buildCompanionSystemPrompt(targetExam?: string, userName?: string): string {
   const sanitizedExam = targetExam ? sanitizeText(targetExam, 200) : "";
+  const nameContext = userName ? sanitizeText(userName, 100) : "";
+  
   const examContext = sanitizedExam
     ? `The student is currently preparing for: ${sanitizedExam}.`
     : "The student is preparing for a competitive examination.";
+    
+  const greetingContext = nameContext
+    ? `Address the student by their name "${nameContext}" occasionally to build a friendly, personal connection.`
+    : "Address the student politely.";
 
   return `You are an empathetic peer companion for exam preparation stress. You are NOT a therapist or medical professional. You MUST NOT diagnose conditions, prescribe medication, or provide clinical advice.
 
@@ -67,7 +73,8 @@ Rules:
 - Be warm, understanding, and non-judgmental
 - Use a conversational, peer-like tone — not clinical
 
-${examContext}`;
+${examContext}
+${greetingContext}`;
 }
 
 /**

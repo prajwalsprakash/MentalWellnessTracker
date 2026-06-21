@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { streamText, convertToModelMessages, type UIMessage } from "ai";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { geminiModel, geminiSafetySettings, buildCompanionSystemPrompt } from "@/lib/gemini";
@@ -32,10 +32,12 @@ const ChatRequestSchema = z.object({
 export async function POST(req: Request) {
   try {
     // ── Auth gate ──────────────────────────────────────────
-    const { userId: clerkId } = await auth();
-    if (!clerkId) {
+    const clerkUser = await currentUser();
+    const clerkId = clerkUser?.id;
+    if (!clerkId || !clerkUser) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const userName = clerkUser.firstName || clerkUser.username || "there";
 
     // ── Rate limiting ──────────────────────────────────────
     const rateLimitKey = `rate_limit:chat:${clerkId}`;
@@ -122,7 +124,7 @@ export async function POST(req: Request) {
     // ── Stream from Gemini ───────────────────────────────
     const result = await streamText({
       model: geminiModel,
-      system: buildCompanionSystemPrompt(targetExam),
+      system: buildCompanionSystemPrompt(targetExam, userName),
       messages: modelMessages,
       providerOptions: {
         google: geminiSafetySettings,
