@@ -14,6 +14,7 @@ import {
   Smile,
   Check,
   AlertTriangle,
+  Github,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUser, UserButton } from "@clerk/nextjs";
@@ -745,9 +746,20 @@ export default function LandingPage() {
               The Mindful Aspirant
             </span>
           </Link>
-          <p className="text-xs font-bold text-on-surface-variant/70">
-            Built with care for students everywhere. Not a medical service.
-          </p>
+          <div className="flex flex-col items-center sm:items-end gap-2">
+            <p className="text-xs font-bold text-on-surface-variant/70">
+              Built with care for students everywhere. Not a medical service.
+            </p>
+            <a
+              href="https://github.com/prajwalsprakash/MentalWellnessTracker"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-on-surface-variant hover:text-primary transition-colors"
+            >
+              <Github className="w-4 h-4" />
+              Open Source on GitHub
+            </a>
+          </div>
         </div>
       </footer>
     </div>
