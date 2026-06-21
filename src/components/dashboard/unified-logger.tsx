@@ -5,6 +5,7 @@ import { Smile, BookOpen, Sparkles, Check, AlertCircle } from "lucide-react";
 
 interface UnifiedLoggerProps {
   onSuccess?: () => void;
+  className?: string;
 }
 
 const moods = [
@@ -26,7 +27,7 @@ const tags = [
   "Energized",
 ] as const;
 
-export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps) {
+export default function UnifiedWellnessLogger({ onSuccess, className = "" }: UnifiedLoggerProps) {
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [reflectionText, setReflectionText] = useState("");
@@ -96,35 +97,35 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
   return (
     <div
       id="unified-logger-card"
-      className="rounded-2xl border border-white/20 bg-white/70 p-5 shadow-sm backdrop-blur-xl transition-shadow duration-300 hover:shadow-md"
+      className={`rounded-xl bg-surface-container border border-outline p-6 shadow-card flex flex-col ${className}`}
     >
       {/* Header */}
-      <div className="mb-4 flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50">
-          <Smile className="h-5 w-5 text-indigo-500" />
+      <div className="mb-4 flex items-center gap-3 shrink-0">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container shadow-sm">
+          <Smile className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h3 className="text-base font-semibold text-slate-800">
+          <h3 className="text-base font-bold text-foreground">
             Daily Check-In &amp; Reflection
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-on-surface-variant font-medium">
             Log your mood and write a quick reflection to reveal AI insights
           </p>
         </div>
       </div>
 
       {isSubmitted ? (
-        <div className="flex flex-col items-center justify-center py-8 animate-in fade-in duration-500">
+        <div className="flex flex-col items-center justify-center py-8 animate-in fade-in duration-500 flex-1">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-            <Check className="h-6 w-6 text-emerald-500" />
+            <Check className="h-6 w-6 text-emerald-600" />
           </div>
-          <p className="mt-3 text-sm font-semibold text-slate-700">Check-in logged successfully!</p>
-          <p className="mt-1 text-xs text-slate-400">Your dashboard is updating... 💚</p>
+          <p className="mt-3 text-sm font-bold text-foreground">Check-in logged successfully!</p>
+          <p className="mt-1 text-xs text-on-surface-variant font-medium">Your dashboard is updating... 💚</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5 flex-1 flex flex-col justify-between">
           {/* Emojis */}
-          <div className="flex items-center justify-between px-2 py-1">
+          <div className="flex items-center justify-between px-2 py-1 bg-surface-container-low rounded-2xl p-2">
             {moods.map((mood) => {
               const isSelected = selectedMood === mood.score;
               return (
@@ -132,12 +133,12 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
                   key={mood.score}
                   type="button"
                   onClick={() => setSelectedMood(mood.score)}
-                  className={`flex flex-col items-center gap-1 rounded-xl p-2 transition-all duration-200 ${
-                    isSelected ? "bg-indigo-50/70 ring-1 ring-indigo-300 scale-105" : "hover:bg-slate-50"
+                  className={`flex flex-col items-center gap-1 rounded-2xl p-2.5 transition-md active-tactile ${
+                    isSelected ? "bg-secondary-container text-on-secondary-container scale-105 shadow-sm font-bold" : "hover:bg-surface-container/60 text-on-surface-variant"
                   }`}
                 >
                   <span className="text-2xl sm:text-3xl">{mood.emoji}</span>
-                  <span className={`text-[10px] font-medium ${isSelected ? "text-indigo-600" : "text-slate-400"}`}>
+                  <span className={`text-[10px] font-semibold ${isSelected ? "text-on-secondary-container" : "text-on-surface-variant/80"}`}>
                     {mood.label}
                   </span>
                 </button>
@@ -147,8 +148,8 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
 
           {/* Tags */}
           <div>
-            <p className="text-xs font-semibold text-slate-500 mb-2">How are you managing exam stress?</p>
-            <div className="flex flex-wrap gap-1.5">
+            <p className="text-xs font-bold text-on-surface-variant mb-2">How are you managing exam stress?</p>
+            <div className="flex flex-wrap gap-2">
               {tags.map((tag) => {
                 const isActive = selectedTags.includes(tag);
                 return (
@@ -156,10 +157,10 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
                     key={tag}
                     type="button"
                     onClick={() => toggleTag(tag)}
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
+                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-md active-tactile ${
                       isActive
-                        ? "bg-indigo-100 text-indigo-700 ring-1 ring-indigo-200"
-                        : "bg-slate-100/80 text-slate-500 hover:bg-slate-200"
+                        ? "bg-secondary-container text-on-secondary-container font-bold"
+                        : "bg-surface-container-low text-on-surface-variant hover:bg-outline/10"
                     }`}
                   >
                     {tag}
@@ -171,8 +172,8 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
 
           {/* Reflection text */}
           <div className="space-y-1.5">
-            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-              <BookOpen className="w-3.5 h-3.5" />
+            <label className="flex items-center gap-1.5 text-xs font-bold text-on-surface-variant">
+              <BookOpen className="w-4 h-4 text-primary" />
               Mindful Journaling (Optional)
             </label>
             <textarea
@@ -180,13 +181,13 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
               onChange={(e) => setReflectionText(e.target.value)}
               placeholder="What study goals or stresses are on your mind? Spill your thoughts..."
               rows={3}
-              className="w-full resize-none rounded-xl border border-slate-200/80 bg-white/40 p-3 text-sm leading-relaxed text-slate-700 placeholder:text-slate-300 focus:border-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-200"
+              className="w-full resize-none rounded-2xl border border-outline/10 bg-surface-container-low p-4 text-sm leading-relaxed text-foreground placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           {errorMessage && (
-            <div className="flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-600">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2.5 text-xs text-rose-700 font-semibold shadow-sm">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -196,7 +197,7 @@ export default function UnifiedWellnessLogger({ onSuccess }: UnifiedLoggerProps)
             type="button"
             onClick={handleSubmit}
             disabled={selectedMood === null && !reflectionText.trim()}
-            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-indigo-400 py-2.5 text-sm font-semibold text-white transition-all hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="md-btn-filled w-full flex items-center justify-center gap-1.5"
           >
             <Sparkles className="w-4 h-4" />
             {isSubmitting ? "Saving Check-In…" : "Log & Reflect"}

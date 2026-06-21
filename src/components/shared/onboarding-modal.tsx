@@ -53,22 +53,22 @@ export default function OnboardingModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
-        className="relative w-full max-w-lg rounded-3xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in"
+        className="relative w-full max-w-lg rounded-3xl bg-[var(--surface-container)] border border-[var(--outline)]/15 shadow-2xl overflow-hidden animate-in fade-in zoom-in"
         role="dialog"
         aria-modal="true"
         aria-label="Welcome onboarding"
       >
         {/* Decorative top gradient */}
-        <div className="h-2 bg-gradient-to-r from-[var(--primary)] via-[var(--secondary)] to-[var(--accent)]" />
+        <div className="h-2 bg-gradient-to-r from-[var(--primary)] via-[var(--tertiary)] to-[var(--secondary-container)]" />
 
         <div className="p-6 sm:p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-50 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--secondary-container)] mb-4">
               <Sparkles className="w-8 h-8 text-[var(--primary)]" />
             </div>
             <h2 className="text-2xl font-bold text-[var(--foreground)]">
@@ -94,8 +94,8 @@ export default function OnboardingModal({
                     onClick={() => setTargetExam(exam)}
                     className={`px-4 py-3 rounded-xl text-sm font-medium transition-all border ${
                       targetExam === exam
-                        ? "border-[var(--primary)] bg-indigo-50 text-[var(--primary)] ring-2 ring-indigo-200"
-                        : "border-[var(--border)] text-[var(--foreground)] hover:border-indigo-200 hover:bg-indigo-50/50"
+                        ? "border-[var(--primary)] bg-[var(--secondary-container)] text-[var(--primary)] ring-2 ring-[var(--primary)]/20"
+                        : "border-[var(--outline)]/20 text-[var(--foreground)] hover:border-[var(--primary)] hover:bg-[var(--secondary-container)]/30"
                     }`}
                   >
                     {exam}
@@ -109,7 +109,7 @@ export default function OnboardingModal({
                   placeholder="Enter your exam name"
                   value={customExam}
                   onChange={(e) => setCustomExam(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-[var(--primary)] mb-4"
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--outline)]/20 bg-[var(--surface-container-low)] text-[var(--foreground)] placeholder:text-[var(--on-surface-variant)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] mb-4"
                 />
               )}
 
@@ -136,13 +136,13 @@ export default function OnboardingModal({
                 onChange={(e) => setTargetDate(e.target.value)}
                 min={new Date().toISOString().split("T")[0]}
                 id="onboarding-date"
-                className="w-full px-4 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-[var(--primary)] mb-6"
+                className="w-full px-4 py-3 rounded-xl border border-[var(--outline)]/20 bg-[var(--surface-container-low)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] mb-6"
               />
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setStep(1)}
-                  className="flex-1 px-6 py-3.5 rounded-xl border border-[var(--border)] text-[var(--foreground)] font-medium hover:bg-slate-50 transition-all"
+                  className="flex-1 px-6 py-3.5 rounded-xl border border-[var(--outline)]/20 text-[var(--foreground)] font-medium hover:bg-[var(--secondary-container)]/30 transition-all"
                 >
                   Back
                 </button>
@@ -169,12 +169,12 @@ export default function OnboardingModal({
           <div className="flex items-center justify-center gap-2 mt-6">
             <div
               className={`w-8 h-1.5 rounded-full transition-all ${
-                step === 1 ? "bg-[var(--primary)]" : "bg-slate-200"
+                step === 1 ? "bg-[var(--primary)]" : "bg-[var(--surface-container-low)]"
               }`}
             />
             <div
               className={`w-8 h-1.5 rounded-full transition-all ${
-                step === 2 ? "bg-[var(--primary)]" : "bg-slate-200"
+                step === 2 ? "bg-[var(--primary)]" : "bg-[var(--surface-container-low)]"
               }`}
             />
           </div>

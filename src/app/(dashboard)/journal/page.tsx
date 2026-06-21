@@ -186,19 +186,19 @@ export default function JournalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="border-b border-slate-100 bg-white/60 backdrop-blur-lg">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="border border-outline/10 bg-surface-container/60 backdrop-blur-lg rounded-[24px] mb-6 shadow-card-static">
+        <div className="mx-auto max-w-7xl px-6 py-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50">
-              <BookOpen className="h-5 w-5 text-indigo-400" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container shadow-sm">
+              <BookOpen className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">
+              <h1 className="text-2xl font-bold text-foreground tracking-tight">
                 Daily Reflection
               </h1>
-              <p className="text-xs text-slate-400 sm:text-sm">
+              <p className="text-xs text-on-surface-variant sm:text-sm font-medium">
                 A safe space to process your thoughts. Write freely.
               </p>
             </div>
@@ -207,23 +207,23 @@ export default function JournalPage() {
       </div>
 
       {/* Main content */}
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-2 py-2">
         <div className="grid gap-6 lg:grid-cols-5 lg:gap-8">
           {/* ---- LEFT: Writing area ---- */}
           <div className="lg:col-span-3">
-            <div className="rounded-2xl border border-white/20 bg-white/70 p-5 shadow-lg backdrop-blur-xl sm:p-6">
+            <div className="rounded-[24px] bg-surface-container p-6 border border-outline/5 shadow-card">
               {/* Textarea */}
               <textarea
                 id="journal-textarea"
                 value={journalText}
                 onChange={(e) => setJournalText(e.target.value)}
                 placeholder="How was your day? What's on your mind? There are no wrong answers here..."
-                className="min-h-[300px] w-full resize-none rounded-xl border-0 bg-transparent p-4 text-base leading-relaxed text-slate-800 outline-none placeholder:text-slate-300 focus:ring-0 sm:min-h-[400px] sm:text-lg"
+                className="min-h-[300px] w-full resize-none rounded-2xl border-0 bg-surface-container-low p-5 text-base leading-relaxed text-foreground outline-none placeholder:text-on-surface-variant/40 focus:ring-2 focus:ring-primary/20 sm:min-h-[400px] sm:text-lg"
               />
 
               {/* Bottom bar */}
-              <div className="flex items-center justify-between border-t border-slate-100 pt-4">
-                <p id="journal-word-count" className="text-sm text-slate-400">
+              <div className="flex items-center justify-between border-t border-outline/10 pt-4 mt-4">
+                <p id="journal-word-count" className="text-sm font-medium text-on-surface-variant">
                   {wordCount} {wordCount === 1 ? 'word' : 'words'}
                 </p>
 
@@ -232,7 +232,7 @@ export default function JournalPage() {
                   type="button"
                   disabled={!journalText.trim() || isAnalyzing}
                   onClick={handleAnalyze}
-                  className="inline-flex items-center gap-2 rounded-full bg-indigo-400 px-5 py-2.5 text-sm font-medium text-white shadow-md transition-all duration-300 hover:bg-indigo-500 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+                  className="md-btn-filled inline-flex items-center gap-2"
                 >
                   {isAnalyzing ? (
                     <>
@@ -254,11 +254,11 @@ export default function JournalPage() {
           <div className="space-y-6 lg:col-span-2">
             {/* Error Message */}
             {error && (
-              <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm text-rose-600 shadow-sm animate-in fade-in duration-300">
+              <div className="flex items-start gap-3 rounded-[24px] border border-rose-100 bg-rose-50 p-5 text-sm text-rose-700 shadow-sm animate-in fade-in duration-300">
                 <AlertCircle className="h-5 w-5 shrink-0 text-rose-500 mt-0.5" />
                 <div>
-                  <p className="font-semibold">Analysis Failed</p>
-                  <p className="mt-0.5 text-xs text-rose-500 leading-relaxed">{error}</p>
+                  <p className="font-bold">Analysis Failed</p>
+                  <p className="mt-0.5 text-xs text-rose-600 leading-relaxed">{error}</p>
                 </div>
               </div>
             )}
@@ -275,15 +275,15 @@ export default function JournalPage() {
               >
                 {/* Primary emotion badge */}
                 {analysisResult.primaryEmotion && (
-                  <div className="rounded-2xl border border-white/20 bg-white/70 p-5 shadow-lg backdrop-blur-xl">
-                    <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
+                  <div className="rounded-[24px] bg-surface-container p-6 border border-outline/5 shadow-card">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                       Primary Emotion
                     </p>
                     <div className="flex items-center gap-3">
                       <span className="text-4xl">
                         {emojiFor(analysisResult.primaryEmotion)}
                       </span>
-                      <span className="rounded-full bg-indigo-50 px-4 py-1.5 text-sm font-semibold capitalize text-indigo-600">
+                      <span className="rounded-full bg-secondary-container px-4 py-1.5 text-sm font-semibold capitalize text-on-secondary-container">
                         {analysisResult.primaryEmotion}
                       </span>
                     </div>
@@ -292,15 +292,15 @@ export default function JournalPage() {
 
                 {/* Stressors */}
                 {analysisResult.stressors && Array.isArray(analysisResult.stressors) && analysisResult.stressors.length > 0 && (
-                  <div className="rounded-2xl border border-white/20 bg-white/70 p-5 shadow-lg backdrop-blur-xl">
-                    <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400">
+                  <div className="rounded-[24px] bg-surface-container p-6 border border-outline/5 shadow-card">
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
                       Stressors Detected
                     </p>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2.5">
                       {analysisResult.stressors.map((stressor, i) => (
                         <li key={i} className="flex items-start gap-2.5">
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-                          <span className="text-sm text-slate-600">
+                          <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-tertiary" />
+                          <span className="text-sm font-medium text-foreground">
                             {stressor}
                           </span>
                         </li>
@@ -311,14 +311,14 @@ export default function JournalPage() {
 
                 {/* AI Insight */}
                 {analysisResult.advice && (
-                  <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-emerald-50/60 shadow-lg backdrop-blur-xl">
-                    <div className="flex gap-3 border-l-4 border-emerald-400 p-5">
-                      <Brain className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                  <div className="overflow-hidden rounded-[24px] border border-[var(--primary)]/15 bg-[var(--secondary-container)]/30 shadow-card">
+                    <div className="flex gap-3 border-l-4 border-[var(--primary)] p-5">
+                      <Brain className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]" />
                       <div>
-                        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-emerald-600">
+                        <p className="mb-1 text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
                           AI Insight
                         </p>
-                        <p className="text-sm leading-relaxed text-slate-700">
+                        <p className="text-sm leading-relaxed text-[var(--foreground)] font-medium">
                           {analysisResult.advice}
                         </p>
                       </div>
@@ -329,34 +329,40 @@ export default function JournalPage() {
             )}
 
             {/* Past entries */}
-            <div className="rounded-2xl border border-white/20 bg-white/70 p-5 shadow-lg backdrop-blur-xl">
+            <div className="rounded-[24px] bg-surface-container p-6 border border-outline/5 shadow-card">
               <div className="mb-4 flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-slate-400" />
-                <h2 className="text-sm font-semibold text-slate-700">
+                <Calendar className="h-4 w-4 text-on-surface-variant" />
+                <h2 className="text-sm font-bold text-foreground">
                   Recent Reflections
                 </h2>
               </div>
               <div className="space-y-3">
-                {pastEntries.map((entry) => (
-                  <button
-                    key={entry.id}
-                    id={`past-entry-${entry.id}`}
-                    type="button"
-                    className="block w-full rounded-xl border border-slate-100 bg-white/60 p-3.5 text-left transition-all duration-200 hover:scale-[1.01] hover:border-indigo-100 hover:shadow-md"
-                  >
-                    <div className="mb-1.5 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-400">
-                        {entry.date}
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-medium capitalize text-slate-500">
-                        {emojiFor(entry.emotion)} {entry.emotion}
-                      </span>
-                    </div>
-                    <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
-                      {entry.preview}
-                    </p>
-                  </button>
-                ))}
+                {pastEntries.length === 0 ? (
+                  <p className="text-xs text-on-surface-variant font-medium py-4 text-center">
+                    No reflections logged yet. Start typing on the left.
+                  </p>
+                ) : (
+                  pastEntries.map((entry) => (
+                    <button
+                      key={entry.id}
+                      id={`past-entry-${entry.id}`}
+                      type="button"
+                      className="block w-full rounded-2xl border border-outline/5 bg-surface-container-low p-4 text-left transition-md active-tactile hover:bg-secondary-container/40"
+                    >
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold text-on-surface-variant">
+                          {entry.date}
+                        </span>
+                        <span className="inline-flex items-center gap-1 rounded-full bg-secondary-container px-2.5 py-0.5 text-[11px] font-semibold capitalize text-on-secondary-container">
+                          {emojiFor(entry.emotion)} {entry.emotion}
+                        </span>
+                      </div>
+                      <p className="line-clamp-2 text-xs leading-relaxed text-on-surface-variant font-medium">
+                        {entry.preview}
+                      </p>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
           </div>

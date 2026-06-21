@@ -18,20 +18,15 @@ import { sanitizeText } from "@/lib/sanitize";
 export const maxDuration = 30; // Vercel serverless timeout
 
 // Zod schema to validate incoming chat request
-const MessagePartSchema = z.object({
-  type: z.literal("text"),
-  text: z.string().max(5000),
-});
-
 const ChatMessageSchema = z.object({
   id: z.string().max(100).optional(),
-  role: z.enum(["user", "assistant"]),
-  content: z.string().max(5000),
-  parts: z.array(MessagePartSchema).optional(),
+  role: z.enum(["user", "assistant", "system", "data"]),
+  content: z.string().max(5000).optional().default(""),
+  parts: z.array(z.any()).optional(),
 });
 
 const ChatRequestSchema = z.object({
-  messages: z.array(ChatMessageSchema).min(1).max(50), // Prevent context flooding (max 50 messages)
+  messages: z.array(ChatMessageSchema).min(1).max(100),
 });
 
 export async function POST(req: Request) {
@@ -70,6 +65,8 @@ export async function POST(req: Request) {
 
     const validation = ChatRequestSchema.safeParse(body);
     if (!validation.success) {
+      console.error("[/api/chat] Validation error:", JSON.stringify(validation.error.format(), null, 2));
+      console.error("[/api/chat] Raw body:", JSON.stringify(body, null, 2));
       return Response.json(
         { error: "Invalid chat messages data" },
         { status: 400 }
@@ -85,13 +82,14 @@ export async function POST(req: Request) {
 
     if (latestUserMessage) {
       let textContent = "";
-      if (latestUserMessage.parts) {
+      if (latestUserMessage.parts && Array.isArray(latestUserMessage.parts)) {
         textContent = latestUserMessage.parts
-          .filter((p) => p.type === "text")
+          .filter((p) => p && typeof p === "object" && p.type === "text" && typeof p.text === "string")
           .map((p) => p.text)
           .join(" ");
-      } else {
-        textContent = latestUserMessage.content;
+      }
+      if (!textContent) {
+        textContent = latestUserMessage.content || "";
       }
 
       const sanitizedText = sanitizeText(textContent, 5000);

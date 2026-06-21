@@ -97,21 +97,21 @@ export default function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
       aria-labelledby="crisis-modal-heading"
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-rose-950/30 backdrop-blur-md" />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-md" />
 
       {/* Dialog */}
       <div
         ref={dialogRef}
-        className={`relative z-10 w-full max-w-lg transform overflow-y-auto rounded-3xl bg-gradient-to-b from-rose-50 to-white p-6 shadow-2xl transition-all duration-300 sm:p-8 ${
+        className={`relative z-10 w-full max-w-lg transform overflow-y-auto rounded-3xl bg-[var(--surface-container)] border border-[var(--outline)]/15 p-6 shadow-2xl transition-all duration-300 sm:p-8 ${
           isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}
         style={{ maxHeight: '90vh' }}
       >
         {/* Pulsing heart */}
         <div className="mb-5 flex justify-center">
-          <div className="animate-pulse rounded-full bg-rose-100 p-4">
+          <div className="animate-pulse rounded-full bg-rose-500/10 p-4">
             <Heart
-              className="h-10 w-10 text-rose-400"
+              className="h-10 w-10 text-rose-500"
               fill="currentColor"
               strokeWidth={1.5}
             />
@@ -121,20 +121,20 @@ export default function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
         {/* Heading */}
         <h2
           id="crisis-modal-heading"
-          className="mb-2 text-center text-2xl font-bold text-slate-800"
+          className="mb-2 text-center text-2xl font-bold text-[var(--foreground)]"
         >
           We Care About You
         </h2>
-        <p className="mb-6 text-center text-sm leading-relaxed text-slate-500">
+        <p className="mb-6 text-center text-sm leading-relaxed text-[var(--on-surface-variant)]">
           You&apos;re not alone. What you&apos;re feeling matters, and there are
           people who want to help.
         </p>
 
         {/* Divider */}
-        <div className="mb-5 h-px bg-gradient-to-r from-transparent via-rose-200 to-transparent" />
+        <div className="mb-5 h-px bg-gradient-to-r from-transparent via-[var(--outline)]/20 to-transparent" />
 
         {/* Helpline heading */}
-        <h3 className="mb-4 text-center text-sm font-semibold text-slate-700">
+        <h3 className="mb-4 text-center text-sm font-semibold text-[var(--foreground)]/80">
           Reach Out Now — Confidential Helplines
         </h3>
 
@@ -145,19 +145,19 @@ export default function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
               key={helpline.number}
               href={`tel:${helpline.number.replace(/[^0-9+]/g, '')}`}
               id={`crisis-helpline-${helpline.number.replace(/[^0-9]/g, '')}`}
-              className="flex items-center gap-3 rounded-xl border border-white/60 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-white hover:shadow-md"
+              className="flex items-center gap-3 rounded-xl border border-[var(--outline)]/10 bg-[var(--surface-container-low)]/80 px-4 py-3 shadow-sm backdrop-blur-sm transition-all duration-200 hover:bg-[var(--secondary-container)]/30 hover:shadow-md"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-50">
-                <Phone className="h-4 w-4 text-rose-400" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-500/10">
+                <Phone className="h-4 w-4 text-rose-500" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-800">
+                <p className="text-sm font-medium text-[var(--foreground)]">
                   <span className="mr-1.5">{helpline.flag}</span>
                   {helpline.name}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[var(--on-surface-variant)]">
                   {helpline.number}
-                  <span className="mx-1.5 text-slate-300">•</span>
+                  <span className="mx-1.5 text-[var(--outline)]/30">•</span>
                   {helpline.available}
                 </p>
               </div>
@@ -166,7 +166,7 @@ export default function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
         </div>
 
         {/* Strength message */}
-        <p className="mb-5 text-center text-xs leading-relaxed text-slate-500">
+        <p className="mb-5 text-center text-xs leading-relaxed text-[var(--on-surface-variant)]">
           Remember: Seeking help is a sign of strength, not weakness. 💛
         </p>
 
@@ -178,15 +178,15 @@ export default function CrisisModal({ isOpen, onClose }: CrisisModalProps) {
               id="crisis-modal-close-button"
               type="button"
               onClick={onClose}
-              className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-600 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:shadow-md"
+              className="md-btn-tonal flex items-center gap-2"
             >
               <X className="h-4 w-4" />
               I understand, close this message
             </button>
           ) : (
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--on-surface-variant)]/75">
               This message will be dismissable in{' '}
-              <span className="font-semibold text-rose-400">{countdown}</span>s
+              <span className="font-semibold text-rose-500">{countdown}</span>s
             </p>
           )}
         </div>

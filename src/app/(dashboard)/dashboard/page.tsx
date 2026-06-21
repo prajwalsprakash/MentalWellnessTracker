@@ -146,37 +146,32 @@ export default function DashboardPage() {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
-          <p className="text-sm font-medium text-slate-400">Assembling your wellness dashboard…</p>
+          <Loader2 className="h-10 w-10 animate-spin text-[var(--primary)]" />
+          <p className="text-sm font-medium text-[var(--on-surface-variant)]">Assembling your wellness dashboard…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <main
-      id="dashboard-main"
-      className="min-h-screen bg-slate-50 px-2 py-4 sm:px-6 lg:px-8"
-    >
+    <div id="dashboard-main" className="space-y-6">
       <h1 className="sr-only">Dashboard</h1>
-
-      <div className="mx-auto max-w-6xl space-y-6">
         {/* ── Welcome Header ────────────────────────── */}
         <section
           id="dashboard-welcome"
-          className="rounded-2xl border border-white/20 bg-white/70 p-6 shadow-md backdrop-blur-xl sm:p-8"
+          className="rounded-[24px] bg-surface-container border border-outline/5 p-6 shadow-card sm:p-8"
         >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             {/* Greeting */}
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 shrink-0">
-                <GreetingIcon className="h-6 w-6 text-indigo-400" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container shadow-sm shrink-0">
+                <GreetingIcon className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                   {greeting.text}, {user?.firstName || "Aspirant"}
                 </h2>
-                <p className="mt-1.5 text-sm text-slate-500 leading-relaxed max-w-xl">
+                <p className="mt-1.5 text-sm text-on-surface-variant leading-relaxed max-w-xl font-medium">
                   {greeting.message}
                 </p>
               </div>
@@ -185,16 +180,16 @@ export default function DashboardPage() {
             {/* Exam countdown */}
             <div
               id="exam-countdown"
-              className="flex items-center gap-3 rounded-xl bg-indigo-50/80 px-5 py-3 shrink-0 self-start sm:self-center"
+              className="flex items-center gap-3 rounded-2xl bg-secondary-container px-5 py-3 shrink-0 self-start sm:self-center shadow-sm"
             >
-              <CalendarClock className="h-5 w-5 text-indigo-400" />
+              <CalendarClock className="h-5 w-5 text-on-secondary-container" />
               <div className="text-left">
-                <p className="text-xs font-semibold uppercase tracking-wider text-indigo-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-on-secondary-container/80">
                   {examName}
                 </p>
-                <p className="text-lg font-bold text-slate-800">
+                <p className="text-lg font-bold text-on-secondary-container">
                   {daysLeft}{" "}
-                  <span className="text-xs font-medium text-slate-500">
+                  <span className="text-xs font-semibold text-on-secondary-container/75">
                     days to go
                   </span>
                 </p>
@@ -206,38 +201,38 @@ export default function DashboardPage() {
         {/* ── Stats Highlights Row ───────────────────── */}
         <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {/* Stat 1: Avg Mood */}
-          <div className="rounded-xl border border-white/10 bg-white/60 p-4 shadow-sm backdrop-blur-md">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Avg Mood (7d)</p>
+          <div className="rounded-xl bg-surface-container border border-outline p-5 shadow-card">
+            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Avg Mood (7d)</p>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-slate-800">
+              <span className="text-2xl font-bold text-foreground">
                 {stats.avgMood > 0 ? stats.avgMood : "--"}
               </span>
-              <span className="text-xs text-slate-400">/ 5.0</span>
+              <span className="text-xs font-medium text-on-surface-variant">/ 5.0</span>
             </div>
           </div>
 
           {/* Stat 2: Weekly Logs */}
-          <div className="rounded-xl border border-white/10 bg-white/60 p-4 shadow-sm backdrop-blur-md">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Check-ins (7d)</p>
+          <div className="rounded-xl bg-surface-container border border-outline p-5 shadow-card">
+            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Check-ins (7d)</p>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-slate-800">{stats.weeklyLogs}</span>
-              <span className="text-xs text-slate-400">times</span>
+              <span className="text-2xl font-bold text-foreground">{stats.weeklyLogs}</span>
+              <span className="text-xs font-medium text-on-surface-variant">times</span>
             </div>
           </div>
 
           {/* Stat 3: Reflections */}
-          <div className="rounded-xl border border-white/10 bg-white/60 p-4 shadow-sm backdrop-blur-md">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Reflections</p>
+          <div className="rounded-xl bg-surface-container border border-outline p-5 shadow-card">
+            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total Reflections</p>
             <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-slate-800">{stats.totalEntries}</span>
-              <span className="text-xs text-slate-400">entries</span>
+              <span className="text-2xl font-bold text-foreground">{stats.totalEntries}</span>
+              <span className="text-xs font-medium text-on-surface-variant">entries</span>
             </div>
           </div>
 
           {/* Stat 4: Exam Date */}
-          <div className="rounded-xl border border-white/10 bg-white/60 p-4 shadow-sm backdrop-blur-md">
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Target Exam Date</p>
-            <p className="mt-2 text-sm font-semibold text-slate-700 leading-6">
+          <div className="rounded-xl bg-surface-container border border-outline p-5 shadow-card">
+            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Target Exam Date</p>
+            <p className="mt-2 text-sm font-bold text-foreground leading-6">
               {examDate.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
             </p>
           </div>
@@ -245,74 +240,69 @@ export default function DashboardPage() {
 
         {/* ── Dashboard Content Grid ─────────────────── */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Left/Middle Column (Check-in, Timeline & Stress Triggers) */}
-          <div className="space-y-6 lg:col-span-2">
-            {/* Unified check-in logger */}
-            <UnifiedWellnessLogger onSuccess={loadDashboardData} />
-
-            {/* Emotional timeline line/area chart */}
-            <div className="relative">
-              {!hasRealMoodData && (
-                <div className="absolute right-4 top-4 z-10">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-600 border border-amber-200">
-                    <Activity className="h-3 w-3 animate-pulse" />
-                    Demo Data Shown
-                  </span>
+          {/* Row 1: Daily Check-In & Reflection and Latest Coping Strategy */}
+          <div className="lg:col-span-2">
+            <UnifiedWellnessLogger className="h-full" onSuccess={loadDashboardData} />
+          </div>
+          <div id="dashboard-ai-insights" className="h-full">
+            {latestInsight ? (
+              <div className="h-full rounded-xl border border-outline bg-[var(--secondary-container)]/20 p-6 shadow-card flex flex-col justify-between">
+                <div className="flex gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--secondary-container)] text-[var(--primary)] shrink-0 shadow-sm">
+                    <Brain className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--primary)]">Latest Coping Strategy</span>
+                    <p className="mt-2.5 text-sm leading-relaxed text-[var(--foreground)] font-medium">
+                      {latestInsight.advice}
+                    </p>
+                  </div>
                 </div>
-              )}
-              <EmotionalTimeline data={hasRealMoodData ? moodLogs : mockMoodData} />
-            </div>
+                <p className="mt-4 text-[10px] text-[var(--on-surface-variant)]/70 font-medium shrink-0">
+                  Generated from your daily reflection on {new Date(latestInsight.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            ) : (
+              <div className="h-full rounded-xl border border-outline bg-surface-container p-6 shadow-card flex flex-col justify-between">
+                <div className="flex gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container shrink-0 shadow-sm">
+                    <Sparkles className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">AI Study Insights</span>
+                    <p className="mt-2.5 text-sm leading-relaxed text-on-surface-variant font-medium">
+                      Select an emoji and write a reflection in the journaling check-in to generate personalized stress coping strategies here.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-            {/* Stress triggers count */}
+          {/* Row 2: Weekly Emotional Pulse and Quick Companion Chat */}
+          <div className="relative lg:col-span-2">
+            {!hasRealMoodData && (
+              <div className="absolute right-4 top-4 z-10">
+                <span className="inline-flex items-center gap-1 rounded-full bg-secondary-container px-2.5 py-0.5 text-[10px] font-bold text-on-secondary-container border border-outline/5 shadow-sm">
+                  <Activity className="h-3 w-3 animate-pulse" />
+                  Demo Data Shown
+                </span>
+              </div>
+            )}
+            <EmotionalTimeline className="h-full" data={hasRealMoodData ? moodLogs : mockMoodData} />
+          </div>
+          <div>
+            <MiniChat className="h-full" />
+          </div>
+
+          {/* Row 3: Stress Triggers */}
+          <div className="lg:col-span-2">
             <StressTriggers triggers={hasRealTriggers ? triggers : mockStressTriggers} />
           </div>
-
-          {/* Right Column (Insights & Companion mini chat) */}
-          <div className="space-y-6">
-            {/* AI Coping Strategies card */}
-            <div id="dashboard-ai-insights">
-              {latestInsight ? (
-                <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-6 shadow-md backdrop-blur-xl">
-                  <div className="flex gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 shrink-0">
-                      <Brain className="h-5 w-5 text-emerald-600" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Latest Coping Strategy</span>
-                      <p className="mt-2.5 text-sm leading-relaxed text-slate-700">
-                        {latestInsight.advice}
-                      </p>
-                      <p className="mt-4 text-[10px] text-slate-400">
-                        Generated from your daily reflection on {new Date(latestInsight.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 p-6 shadow-md backdrop-blur-xl">
-                  <div className="flex gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 shrink-0">
-                      <Sparkles className="h-5 w-5 text-indigo-500" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-indigo-500">AI Study Insights</span>
-                      <p className="mt-2.5 text-sm leading-relaxed text-slate-600">
-                        Select an emoji and write a reflection in the journaling check-in to generate personalized stress coping strategies here.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Mini companion chat */}
-            <MiniChat />
-          </div>
         </div>
-      </div>
 
       {/* Onboarding Modal for New Users */}
       <OnboardingModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} />
-    </main>
+    </div>
   );
 }

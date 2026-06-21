@@ -2,17 +2,16 @@ import { SignUp } from "@clerk/nextjs";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--background)] px-4">
-      {/* Ambient background */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-indigo-200/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-emerald-200/15 rounded-full blur-3xl" />
-
+    <div className="min-h-screen flex items-center justify-center bg-transparent px-4">
       <div className="relative z-10">
         <SignUp
           appearance={{
+            variables: {
+              colorPrimary: "#4A6B53",
+            },
             elements: {
               rootBox: "mx-auto",
-              card: "shadow-xl border border-[var(--border)] rounded-2xl",
+              card: "shadow-xl border border-[var(--outline)]/15 rounded-2xl bg-[var(--surface-container)]",
             },
           }}
         />

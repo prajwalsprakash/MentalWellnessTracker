@@ -12,7 +12,7 @@ interface StressTriggersProps {
 const dotColors = [
   "bg-rose-400",
   "bg-amber-400",
-  "bg-indigo-400",
+  "bg-primary",
   "bg-emerald-400",
 ];
 
@@ -22,18 +22,18 @@ export default function StressTriggers({ triggers }: StressTriggersProps) {
   return (
     <div
       id="stress-triggers-card"
-      className="rounded-2xl border border-white/20 bg-white/70 p-6 shadow-md backdrop-blur-xl transition-shadow duration-300 hover:shadow-lg"
+      className="rounded-xl bg-surface-container border border-outline p-6 shadow-card"
     >
       {/* Header */}
       <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50">
-          <AlertTriangle className="h-5 w-5 text-rose-400" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container shadow-sm">
+          <AlertTriangle className="h-6 w-6 text-tertiary" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-lg font-bold text-foreground">
             Key Stress Triggers This Week
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-xs text-on-surface-variant font-medium">
             Patterns to be mindful of
           </p>
         </div>
@@ -45,11 +45,11 @@ export default function StressTriggers({ triggers }: StressTriggersProps) {
           id="stress-triggers-empty"
           className="flex flex-col items-center justify-center py-8 text-center"
         >
-          <p className="text-3xl">🌟</p>
-          <p className="mt-3 text-base font-medium text-slate-700">
+          <p className="text-3xl animate-bounce">🌟</p>
+          <p className="mt-3 text-base font-bold text-foreground">
             No major stress triggers detected.
           </p>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-xs text-on-surface-variant font-medium">
             Keep it up! You&apos;re managing well.
           </p>
         </div>
@@ -59,18 +59,18 @@ export default function StressTriggers({ triggers }: StressTriggersProps) {
             <li
               key={item.trigger}
               id={`stress-trigger-${index}`}
-              className="group flex items-center justify-between rounded-xl px-4 py-3 transition-all duration-200 hover:bg-slate-50/80"
+              className="group flex items-center justify-between rounded-2xl px-4 py-2.5 transition-md hover:bg-secondary-container/40 active-tactile cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <span
                   className={`inline-block h-2.5 w-2.5 rounded-full ${dotColors[index % dotColors.length]}`}
                 />
-                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">
+                <span className="text-sm font-semibold text-foreground">
                   {item.trigger}
                 </span>
               </div>
 
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">
+              <span className="rounded-full bg-secondary-container px-2.5 py-0.5 text-xs font-bold text-on-secondary-container">
                 {item.count}
               </span>
             </li>

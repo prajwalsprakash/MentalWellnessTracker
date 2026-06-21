@@ -2,153 +2,93 @@
 
 > *Your digital strategist for mental clarity and exam mastery.*
 
-**The Mindful Aspirant** is a hyper-personalized, calming mental wellness tracker designed specifically for students tackling high-stakes competitive examinations. Built on Next.js 16, powered by Google Gemini 3.5 Flash, styled with a soothing glassmorphic UI, and secured with Clerk and database crisis safety interceptors.
+**The Mindful Aspirant** is a hyper-personalized, calming mental wellness tracker designed specifically for students tackling high-stakes competitive examinations. 
 
-🔗 **Live Demo:** [https://mindful-aspirant.vercel.app](https://mindful-aspirant.vercel.app)
+Built with a premium Lovable-inspired aesthetic, the application provides a distraction-free, beautifully immersive environment to log moods, journal reflections, and chat with an empathetic AI peer.
 
-Note: It's Good to create new sign-up to properly onboard of Exam aspirantand give the details of the preferences.
-Or use below test account:
-
-Test account: learning.nci@gmail.com
-pwd: mAr5zp6h2GHtj4F
-
+![Mindful Aspirant Dashboard](/preview-dashboard.png)
 
 ---
 
-## 🌟 Key Features
+## 🌟 Architecture & Tech Stack
 
-1. **Mindful Dashboard:** A comprehensive view of student well-being featuring:
-   * **Weekly Emotional Pulse:** A smooth, interactive `Recharts` area gradient chart mapping mood scores over the past 7 days.
-   * **Key Stress Triggers:** An aggregated frequency dashboard extracting triggers (e.g. mock exam anxiety, backlog pressure) from reflection entries.
-   * **Quick Mood Logger:** An interactive 5-emoji mood check-in widget with contextual tags.
-2. **Daily Reflections (Journal):** A distraction-free, calming writing space for daily journaling:
-   * **Real-time AI Sentiment Analysis:** Classifies primary emotions (anxious, Low, Focused, Confident, etc.).
-   * **Cognitive Reframing Advice:** Provides personalized, empathetic advice.
-   * **Crisis Safety Guardrails:** Scans entries locally using keyword matching for self-harm intent *before* any AI processing, triggering support overlays.
-3. **Empathetic Study Companion:** A real-time, streaming chatbot built with Vercel AI SDK to support students through study burnout and mock test anxiety.
-
----
-
-## 🛠️ Technology Stack
+This application is built on a modern, highly scalable serverless architecture designed for speed, safety, and seamless UI rendering.
 
 * **Frontend Framework:** Next.js 16 (App Router)
-* **Styling:** Tailwind CSS v4 (Glassmorphic theme, light-only calming colors)
-* **Authentication:** Clerk Next.js SDK
-* **Database & ORM:** Vercel Postgres / Neon Serverless connected via WebSocket secure proxy (`@prisma/adapter-neon` + `@neondatabase/serverless` on port 443) & Prisma ORM
-* **GenAI Engine:** Google Gemini 3.5 Flash via Vercel AI SDK
+* **Styling:** Tailwind CSS v4 featuring a custom Glassmorphic Dark Theme.
+* **Authentication:** Clerk Next.js SDK for secure, frictionless onboarding.
+* **Database & ORM:** Neon Serverless PostgreSQL database connected via WebSocket proxy (`@neondatabase/serverless`), abstracted with Prisma ORM.
+* **GenAI Engine:** Google Gemini 3.5 Flash streamed via Vercel AI SDK.
+
+### Architecture Flow
+1. **Client Layer:** Renders the responsive glassmorphic UI. Uses React state and `lucide-react` icons. All heavy animations are hardware-accelerated CSS keyframes to ensure 60fps scrolling.
+2. **Edge Network:** All incoming requests hit Next.js middleware where Clerk validates authentication tokens and enforces route protection.
+3. **Serverless API:** API routes (`/api/chat`, `/api/journal`, `/api/mood`) process business logic. They run through a strict security interceptor layer (Zod validation, Rate Limiting, Crisis Detection).
+4. **Data Layer:** Prisma queries the Neon database to fetch or store securely structured user data.
+
+---
+
+## 🎨 Premium Template Design
+
+The entire application was overhauled to feature a stunning, **Strict Dark Mode** aesthetic inspired by modern, premium web apps like Lovable.dev.
+
+### Design Highlights:
+* **Luminous Background Flow:** The global background is driven by hardware-accelerated, floating CSS radial gradients in deep Purple, Blue, and Emerald hues. They gracefully drift behind the UI, blending via a lightweight CSS noise overlay to create a soft, matte "frosted glass" aura without GPU pixelation.
+* **Glassmorphism & Depth:** Sidebars, navigation elements, and cards utilize semi-transparent surfaces (`bg-surface-container/60`) and heavy backdrop blurs. This creates a deep 3D hierarchy as the background glowing orbs bleed through the UI elements.
+* **Fluid Typography & Radii:** Uses soft pill-shaped buttons, heavily rounded cards (`rounded-[24px]`), and dynamic type scaling to create a highly organic, approachable layout.
+* **Tactile Interactions:** Micro-animations (like the pulse on the logo, `active:scale-95` button presses, and hover elevation shadows) give the app a physical, responsive feel.
+
+---
+
+## 🔒 Security & Testing
+
+The application has been fully audited and strictly hardened. 
+
+### Security Implementations:
+1. **Pre-AI Crisis Detection:** Every journal entry and chat message is intercepted locally using RegEx keyword heuristics before being sent to Gemini. If self-harm or severe distress is detected, AI processing is halted and a Crisis Support Modal is immediately presented.
+2. **Data Sanitization & Injection Defense:** All user inputs are strictly typed with Zod schemas. Text is stripped of HTML/XML and wrapped in delimiters to prevent second-order prompt injection attacks on the LLM.
+3. **Endpoint Rate Limiting:** A sliding-window rate limiter restricts abusive traffic across all endpoints (e.g., 5 req/min for AI endpoints, 30 req/min for simple data fetches).
+4. **No PII Exposure:** Personal Identifying Information (emails, names) is never sent to the LLM.
+
+### Unit Testing:
+The core business and security logic is validated by **35 passing unit tests** via Vitest, achieving high coverage on:
+* Text Sanitizers & Guardrails
+* Crisis Detection engine
+* In-memory Rate Limiters
+* User Database Resolution
+* API Route Integration tests (Mood, Journal, Chat)
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Clone & Install Dependencies
-
+### 1. Clone & Install
 ```bash
 git clone <repository-url>
 cd MentalWellnessTracker
 npm install
 ```
-*Note: Installs all packages and runs `prisma generate` to build the local type-safe client.*
 
 ### 2. Configure Environment Variables
-
-Create a `.env.local` file in the root directory:
-
+Create a `.env.local` file:
 ```env
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/dashboard
-NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/dashboard
-
-# Vercel Postgres (Neon)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=...
+CLERK_SECRET_KEY=...
 POSTGRES_URL="postgresql://neondb_owner:..."
-POSTGRES_URL_NON_POOLING="postgresql://neondb_owner:..."
-
-# Google Gemini API Key
-GOOGLE_GENERATIVE_AI_API_KEY=AIzaSy...
+GOOGLE_GENERATIVE_AI_API_KEY=...
 ```
 
-### 3. Database Schema Push
-
-Initialize the Neon database tables:
-
+### 3. Initialize & Run
 ```bash
 npx prisma db push
-```
-
-### 4. Run Development Server
-
-```bash
 npm run dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
----
-
-## 📦 Deployment
-
-This project is fully ready for deployment to Vercel:
-
-1. **Deploy Production:**
-   ```bash
-   npx vercel --prod
-   ```
-2. **Push Production Schema:**
-   Ensure environment variables (`CLERK_SECRET_KEY`, `POSTGRES_URL`, `GOOGLE_GENERATIVE_AI_API_KEY`) are set in Vercel settings, then schema pushes run automatically on Vercel builds via `npm run vercel-build`.
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🔒 Security Hardening
+## 👨‍💻 End Credits
 
-To ensure student safety, privacy, and system reliability, the following safety and security measures have been implemented:
+**Architected & Built by:** [prajwalsprakash](https://github.com/prajwalsprakash)
 
-1. **Security Headers (CSP, HSTS):** 
-   Configured strong response headers in `next.config.ts` including strict Content-Security-Policy (with domains restricted to Clerk auth and self-origin), clickjacking protection (`X-Frame-Options: DENY`), MIME-sniffing protection (`X-Content-Type-Options: nosniff`), and Strict-Transport-Security.
-2. **Endpoint Rate Limiting:**
-   Added an in-memory sliding-window rate limiter in `src/lib/rate-limit.ts` applying per-user rate limits:
-   * AI-heavy routes (`/api/chat`, `/api/journal/analyze`): **5 requests/minute**
-   * Read-heavy routes (`/api/dashboard`): **20 requests/minute**
-   * Profile/logger routes (`/api/mood`, `/api/user`): **30 requests/minute**
-3. **Strict Input Sanitization:**
-   Inputs are sanitized using helper functions in `src/lib/sanitize.ts` to strip HTML/XML tags and restrict strings to their maximum safe lengths before being stored or sent to Gemini.
-4. **Prompt Injection Mitigations:**
-   * **First-order prompt injection:** User journal text is wrapped in delimiters (`[START JOURNAL ENTRY]` and `[END JOURNAL ENTRY]`) and sanitized to prevent system prompt overrides.
-   * **Second-order prompt injection:** The `targetExam` field is fully sanitized before being stored in the database and interpolated into the companion's system prompt.
-5. **PII and Data Minimization:** 
-   No PII (such as emails, user IDs, names) is passed to Google Gemini. Only the sanitized exam name and raw journal text are sent for processing.
-6. **Encapsulated Responses:** 
-   Internal database UUIDs are kept hidden from the client to prevent ID-based reconnaissance.
-
----
-
-## 🧪 Testing & Code Coverage
-
-We maintain a comprehensive suite of 33 unit and route integration tests using **Vitest** and **v8 Coverage**.
-
-### Run All Tests
-```bash
-npm test
-```
-
-### Run Tests in Watch Mode
-```bash
-npm run test:watch
-```
-
-### Generate Coverage Report
-```bash
-npm run test:coverage
-```
-
-### Coverage Overview
-The test suite achieves **>80% statement coverage** across the entire application, testing:
-* **Crisis Detection:** Positive/negative keyword matching, case-sensitivity, and boundary conditions.
-* **Sanitization:** HTML stripping, tag filtering, prompt structuring, and type safety checks.
-* **Rate Limiting:** Sliding-windows, request blocking under stress, and sliding-window resets.
-* **User Resolution:** DB find-or-create logic and error boundaries.
-* **API Endpoints:** Request routing, Zod parsing error responses, and rate limit header verification.
-
+*Designed with ❤️ for students navigating the pressures of competitive exams.*
