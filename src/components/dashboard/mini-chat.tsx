@@ -78,7 +78,7 @@ export default function MiniChat({ className = "" }: MiniChatProps) {
       {/* Message Area */}
       <div
         ref={scrollRef}
-        className="mb-3 flex-1 min-h-[16rem] overflow-y-auto rounded-2xl border border-outline/5 bg-surface-container-low p-3.5"
+        className="mb-3 h-[16rem] overflow-y-auto rounded-2xl border border-outline/5 bg-surface-container-low p-3.5"
       >
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center text-center">
