@@ -6,7 +6,9 @@
 
 Built with a premium Lovable-inspired aesthetic, the application provides a distraction-free, beautifully immersive environment to log moods, journal reflections, and chat with an empathetic AI peer.
 
-![Mindful Aspirant Dashboard](/preview-dashboard.png)
+**🚀 Live Demo:** [https://mindful-aspirant.vercel.app](https://mindful-aspirant.vercel.app)
+
+![Mindful Aspirant Dashboard](/public/preview-dashboard.png)
 
 ---
 
