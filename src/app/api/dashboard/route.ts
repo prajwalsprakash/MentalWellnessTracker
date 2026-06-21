@@ -7,6 +7,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -15,6 +16,16 @@ export async function GET() {
     const { userId: clerkId } = await auth();
     if (!clerkId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // ── Rate limiting ──────────────────────────────────────
+    const rateLimitKey = `rate_limit:dashboard:${clerkId}`;
+    const limitResult = rateLimit(rateLimitKey, 20, 60000); // 20 requests per minute
+    if (!limitResult.success) {
+      return Response.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
     }
 
     const user = await db.user.findUnique({
@@ -83,6 +94,7 @@ export async function GET() {
         userId: user.id,
         createdAt: { gte: sevenDaysAgo },
       },
+      take: 100, // Prevent DB exhaustion by capping weekly query records
       select: { stressors: true },
     });
 

@@ -16,12 +16,17 @@ import {
   CRISIS_RESPONSE_MESSAGE,
   CRISIS_HELPLINES,
 } from "@/lib/crisis-detection";
+import { sanitizeText, sanitizeForPrompt } from "@/lib/sanitize";
+import { resolveUser } from "@/lib/resolve-user";
+import { rateLimit } from "@/lib/rate-limit";
 
-// Zod schema to validate Gemini's JSON response
+export const maxDuration = 30; // Vercel serverless timeout
+
+// Zod schema to validate Gemini's JSON response (hardened strings)
 const AnalysisSchema = z.object({
-  primaryEmotion: z.string(),
-  stressors: z.array(z.string()),
-  advice: z.string(),
+  primaryEmotion: z.string().max(50),
+  stressors: z.array(z.string().max(100)).max(10),
+  advice: z.string().max(1000),
 });
 
 export async function POST(req: Request) {
@@ -32,8 +37,32 @@ export async function POST(req: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { text } = body;
+    // ── Rate limiting ──────────────────────────────────────
+    const rateLimitKey = `rate_limit:journal:${clerkId}`;
+    const limitResult = rateLimit(rateLimitKey, 5, 60000); // 5 requests per minute
+    if (!limitResult.success) {
+      return Response.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(limitResult.resetMs / 1000).toString(),
+          },
+        }
+      );
+    }
+
+    // ── Parse request body ─────────────────────────────────
+    let text = "";
+    try {
+      const body = await req.json();
+      text = body.text;
+    } catch {
+      return Response.json(
+        { error: "Malformed JSON request body" },
+        { status: 400 }
+      );
+    }
 
     if (!text || typeof text !== "string" || text.trim().length === 0) {
       return Response.json(
@@ -49,30 +78,22 @@ export async function POST(req: Request) {
       );
     }
 
-    // ── Resolve internal user ID ─────────────────────────
-    let user = await db.user.findUnique({
-      where: { clerkId },
-      select: { id: true },
-    });
+    // Sanitize input text before storage and usage
+    const sanitizedText = sanitizeText(text, 10000);
 
-    // Auto-create user if first interaction
-    if (!user) {
-      user = await db.user.create({
-        data: { clerkId, targetExam: "", targetDate: new Date() },
-        select: { id: true },
-      });
-    }
+    // ── Resolve internal user ID ─────────────────────────
+    const user = await resolveUser(clerkId);
 
     // ── Crisis check FIRST (before sending to AI) ────────
-    const crisisResult = detectCrisis(text);
+    const crisisResult = detectCrisis(sanitizedText);
     if (crisisResult.isCrisis) {
-      // Save the entry as a crisis entry
+      // Save the entry as a crisis entry (mask/exclude matched patterns from stressors to protect privacy)
       const entry = await db.journalEntry.create({
         data: {
           userId: user.id,
-          text,
+          text: sanitizedText,
           primaryEmotion: "crisis",
-          stressors: crisisResult.matchedPatterns,
+          stressors: ["crisis-trigger"],
           advice: CRISIS_RESPONSE_MESSAGE,
           isCrisis: true,
         },
@@ -81,7 +102,7 @@ export async function POST(req: Request) {
       return Response.json({
         id: entry.id,
         primaryEmotion: "crisis",
-        stressors: crisisResult.matchedPatterns,
+        stressors: ["crisis-trigger"],
         advice: CRISIS_RESPONSE_MESSAGE,
         isCrisis: true,
         helplines: CRISIS_HELPLINES,
@@ -89,12 +110,12 @@ export async function POST(req: Request) {
     }
 
     // ── Send sanitized text to Gemini for analysis ───────
-    // NOTE: We do NOT send user ID, name, email, or any PII.
-    // Only the raw journal text is sent for emotion analysis.
+    // Prevent prompt injection by sanitizing and isolating prompt structure
+    const promptText = sanitizeForPrompt(sanitizedText.slice(0, 5000));
     const { text: aiResponse } = await generateText({
       model: geminiModel,
       system: buildJournalAnalysisPrompt(),
-      prompt: `Analyze this student journal entry:\n\n"${text.slice(0, 5000)}"`,
+      prompt: `Analyze this student journal entry:\n\n[START JOURNAL ENTRY]\n${promptText}\n[END JOURNAL ENTRY]`,
       providerOptions: {
         google: geminiSafetySettings,
       },
@@ -124,19 +145,19 @@ export async function POST(req: Request) {
     const entry = await db.journalEntry.create({
       data: {
         userId: user.id,
-        text,
-        primaryEmotion: analysis.primaryEmotion,
-        stressors: analysis.stressors,
-        advice: analysis.advice,
+        text: sanitizedText,
+        primaryEmotion: analysis.primaryEmotion.slice(0, 50),
+        stressors: analysis.stressors.map((s) => s.slice(0, 100)).slice(0, 10),
+        advice: analysis.advice.slice(0, 1000),
         isCrisis: false,
       },
     });
 
     return Response.json({
       id: entry.id,
-      primaryEmotion: analysis.primaryEmotion,
-      stressors: analysis.stressors,
-      advice: analysis.advice,
+      primaryEmotion: entry.primaryEmotion,
+      stressors: entry.stressors,
+      advice: entry.advice,
       isCrisis: false,
     });
   } catch (error) {

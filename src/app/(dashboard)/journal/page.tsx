@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen, Sparkles, Loader2, Calendar, Brain, AlertCircle } from 'lucide-react';
 import CrisisModal from '@/components/shared/crisis-modal';
 
@@ -92,7 +92,43 @@ export default function JournalPage() {
   const [error, setError] = useState<string | null>(null);
   const [crisisTriggered, setCrisisTriggered] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [pastEntries] = useState<PastEntry[]>(MOCK_PAST_ENTRIES);
+  const [pastEntries, setPastEntries] = useState<PastEntry[]>([]);
+
+  function formatDate(dateString: string): string {
+    try {
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) return 'Today';
+      return d.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      return 'Today';
+    }
+  }
+
+  // Load past entries on mount
+  useEffect(() => {
+    async function loadEntries() {
+      try {
+        const res = await fetch('/api/journal');
+        if (res.ok) {
+          const data = await res.json();
+          const mapped = data.entries.map((e: any) => ({
+            id: e.id,
+            date: formatDate(e.createdAt),
+            emotion: e.primaryEmotion,
+            preview: e.text,
+          }));
+          setPastEntries(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to load past reflections:', err);
+      }
+    }
+    loadEntries();
+  }, []);
 
   const wordCount = journalText.trim()
     ? journalText.trim().split(/\s+/).length
@@ -105,11 +141,13 @@ export default function JournalPage() {
     setShowResults(false);
     setError(null);
 
+    const originalText = journalText;
+
     try {
       const res = await fetch('/api/journal/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: journalText }),
+        body: JSON.stringify({ text: originalText }),
       });
 
       if (!res.ok) {
@@ -117,12 +155,24 @@ export default function JournalPage() {
         throw new Error(errorData.error || 'Failed to analyze journal entry.');
       }
 
-      const data: AnalysisResult = await res.json();
+      const data: AnalysisResult & { id?: string } = await res.json();
       setAnalysisResult(data);
 
       if (data.isCrisis) {
         setCrisisTriggered(true);
       }
+
+      // Add to past reflections immediately
+      const newEntry: PastEntry = {
+        id: data.id || `temp-${Date.now()}`,
+        date: formatDate(new Date().toISOString()),
+        emotion: data.primaryEmotion,
+        preview: originalText,
+      };
+      setPastEntries((prev) => [newEntry, ...prev]);
+
+      // Clear textarea after successful reflection
+      setJournalText('');
 
       // Trigger fade-in
       requestAnimationFrame(() => setShowResults(true));

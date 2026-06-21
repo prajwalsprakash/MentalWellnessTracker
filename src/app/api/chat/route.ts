@@ -8,11 +8,31 @@
 
 import { streamText, convertToModelMessages, type UIMessage } from "ai";
 import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
 import { db } from "@/lib/db";
 import { geminiModel, geminiSafetySettings, buildCompanionSystemPrompt } from "@/lib/gemini";
 import { detectCrisis, CRISIS_RESPONSE_MESSAGE } from "@/lib/crisis-detection";
+import { rateLimit } from "@/lib/rate-limit";
+import { sanitizeText } from "@/lib/sanitize";
 
 export const maxDuration = 30; // Vercel serverless timeout
+
+// Zod schema to validate incoming chat request
+const MessagePartSchema = z.object({
+  type: z.literal("text"),
+  text: z.string().max(5000),
+});
+
+const ChatMessageSchema = z.object({
+  id: z.string().max(100).optional(),
+  role: z.enum(["user", "assistant"]),
+  content: z.string().max(5000),
+  parts: z.array(MessagePartSchema).optional(),
+});
+
+const ChatRequestSchema = z.object({
+  messages: z.array(ChatMessageSchema).min(1).max(50), // Prevent context flooding (max 50 messages)
+});
 
 export async function POST(req: Request) {
   try {
@@ -22,11 +42,41 @@ export async function POST(req: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { messages } = (await req.json()) as { messages: UIMessage[] };
-
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return Response.json({ error: "Messages are required" }, { status: 400 });
+    // ── Rate limiting ──────────────────────────────────────
+    const rateLimitKey = `rate_limit:chat:${clerkId}`;
+    const limitResult = rateLimit(rateLimitKey, 5, 60000); // 5 requests per minute
+    if (!limitResult.success) {
+      return Response.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(limitResult.resetMs / 1000).toString(),
+          },
+        }
+      );
     }
+
+    // ── Parse and validate request body ────────────────────
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return Response.json(
+        { error: "Malformed JSON request body" },
+        { status: 400 }
+      );
+    }
+
+    const validation = ChatRequestSchema.safeParse(body);
+    if (!validation.success) {
+      return Response.json(
+        { error: "Invalid chat messages data" },
+        { status: 400 }
+      );
+    }
+
+    const messages = validation.data.messages;
 
     // ── Crisis check on the latest user message ──────────
     const latestUserMessage = [...messages]
@@ -34,16 +84,19 @@ export async function POST(req: Request) {
       .find((m) => m.role === "user");
 
     if (latestUserMessage) {
-      // Extract text from UIMessage parts
-      const textContent =
-        latestUserMessage.parts
-          ?.filter(
-            (p): p is { type: "text"; text: string } => p.type === "text"
-          )
+      let textContent = "";
+      if (latestUserMessage.parts) {
+        textContent = latestUserMessage.parts
+          .filter((p) => p.type === "text")
           .map((p) => p.text)
-          .join(" ") || "";
+          .join(" ");
+      } else {
+        textContent = latestUserMessage.content;
+      }
 
-      const crisisResult = detectCrisis(textContent);
+      const sanitizedText = sanitizeText(textContent, 5000);
+
+      const crisisResult = detectCrisis(sanitizedText);
       if (crisisResult.isCrisis) {
         return Response.json({
           isCrisis: true,
@@ -66,7 +119,7 @@ export async function POST(req: Request) {
     }
 
     // ── Convert UIMessages → ModelMessages for streamText ─
-    const modelMessages = await convertToModelMessages(messages);
+    const modelMessages = await convertToModelMessages(messages as UIMessage[]);
 
     // ── Stream from Gemini ───────────────────────────────
     const result = await streamText({

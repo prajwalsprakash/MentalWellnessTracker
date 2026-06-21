@@ -6,6 +6,7 @@
 
 import { google } from "@ai-sdk/google";
 import type { GoogleLanguageModelOptions } from "@ai-sdk/google";
+import { sanitizeText } from "./sanitize";
 
 /**
  * Pre-configured Gemini 3.5 Flash model.
@@ -45,8 +46,9 @@ export const geminiSafetySettings: GoogleLanguageModelOptions = {
  * No PII is included — only the exam name.
  */
 export function buildCompanionSystemPrompt(targetExam?: string): string {
-  const examContext = targetExam
-    ? `The student is currently preparing for: ${targetExam}.`
+  const sanitizedExam = targetExam ? sanitizeText(targetExam, 200) : "";
+  const examContext = sanitizedExam
+    ? `The student is currently preparing for: ${sanitizedExam}.`
     : "The student is preparing for a competitive examination.";
 
   return `You are an empathetic peer companion for exam preparation stress. You are NOT a therapist or medical professional. You MUST NOT diagnose conditions, prescribe medication, or provide clinical advice.

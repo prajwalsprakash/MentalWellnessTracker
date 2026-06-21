@@ -8,6 +8,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
+import { sanitizeText } from "@/lib/sanitize";
 
 const UserProfileSchema = z.object({
   targetExam: z.string().min(1).max(200),
@@ -24,31 +26,56 @@ export async function POST(req: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json();
-    const validation = UserProfileSchema.safeParse(body);
-
-    if (!validation.success) {
+    // ── Rate limiting ──────────────────────────────────────
+    const rateLimitKey = `rate_limit:user_post:${clerkId}`;
+    const limitResult = rateLimit(rateLimitKey, 30, 60000); // 30 requests per minute
+    if (!limitResult.success) {
       return Response.json(
-        { error: "Invalid profile data", details: validation.error.flatten() },
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(limitResult.resetMs / 1000).toString(),
+          },
+        }
+      );
+    }
+
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return Response.json(
+        { error: "Malformed JSON request body" },
         { status: 400 }
       );
     }
 
+    const validation = UserProfileSchema.safeParse(body);
+    if (!validation.success) {
+      return Response.json(
+        { error: "Invalid profile data" },
+        { status: 400 }
+      );
+    }
+
+    // Sanitize target exam string before storage to prevent 2nd-order prompt injection
+    const sanitizedExam = sanitizeText(validation.data.targetExam, 200);
+
     const user = await db.user.upsert({
       where: { clerkId },
       update: {
-        targetExam: validation.data.targetExam,
+        targetExam: sanitizedExam,
         targetDate: new Date(validation.data.targetDate),
       },
       create: {
         clerkId,
-        targetExam: validation.data.targetExam,
+        targetExam: sanitizedExam,
         targetDate: new Date(validation.data.targetDate),
       },
     });
 
     return Response.json({
-      id: user.id,
       targetExam: user.targetExam,
       targetDate: user.targetDate,
       success: true,
@@ -70,10 +97,19 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // ── Rate limiting ──────────────────────────────────────
+    const rateLimitKey = `rate_limit:user_get:${clerkId}`;
+    const limitResult = rateLimit(rateLimitKey, 30, 60000); // 30 requests per minute
+    if (!limitResult.success) {
+      return Response.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const user = await db.user.findUnique({
       where: { clerkId },
       select: {
-        id: true,
         targetExam: true,
         targetDate: true,
         createdAt: true,
