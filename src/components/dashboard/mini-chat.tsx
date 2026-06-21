@@ -84,7 +84,7 @@ export default function MiniChat({ className = "" }: MiniChatProps) {
           <div className="flex h-full flex-col items-center justify-center text-center">
             <Bot className="h-6 w-6 text-on-surface-variant/50 mb-1 animate-pulse-gentle" />
             <p className="text-[11px] font-semibold text-foreground">Need a quick boost or stress relief?</p>
-            <div className="mt-2 flex.5 flex gap-1.5 justify-center">
+            <div className="mt-2 flex flex-wrap gap-1.5 justify-center px-2">
               <button
                 type="button"
                 onClick={() => handleQuickAction("Give me a quick 1-minute breathing exercise")}
@@ -98,6 +98,20 @@ export default function MiniChat({ className = "" }: MiniChatProps) {
                 className="rounded-full border border-outline/10 bg-surface-container px-2.5 py-1 text-[9px] text-primary font-bold active-tactile cursor-pointer"
               >
                 💡 Support
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickAction("How can I quickly regain focus right now?")}
+                className="rounded-full border border-outline/10 bg-surface-container px-2.5 py-1 text-[9px] text-primary font-bold active-tactile cursor-pointer"
+              >
+                🧠 Focus
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickAction("Give me a tip to wind down for sleep")}
+                className="rounded-full border border-outline/10 bg-surface-container px-2.5 py-1 text-[9px] text-primary font-bold active-tactile cursor-pointer"
+              >
+                🌙 Sleep
               </button>
             </div>
           </div>
